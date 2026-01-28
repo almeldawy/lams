@@ -1,0 +1,17 @@
+{
+  "name": "BioSolis Prime",
+  "short_name": "BioSolis",
+  "description": "Expertise Microbiologique des Sols d'après les travaux des Bourguignon.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "theme_color": "#a3d4ff",
+  "background_color": "#a3d4ff",
+  "icons": [
+    {
+      "src": "web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
