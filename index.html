@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BioSolis Prime | Diagnostic Sol</title>
+    
+    <!-- Police Premium : Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Palette de couleurs Nature & Tech */
+            --bg-gradient: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+            --glass-surface: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --primary: #2d6a4f;
+            --accent: #d4a373; /* Couleur Terre/Or */
+            --danger: #e63946;
+            --success: #2a9d8f;
+            --text-dark: #1f2f25;
+            --text-light: #526357;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* Container Principal avec effet Verre (Glassmorphism) */
+        .app-shell {
+            background: var(--glass-surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 700px;
+            padding: 0;
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* En-tête Sticky */
+        header {
+            background: rgba(255,255,255,0.8);
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+
+        header h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; color: var(--primary); }
+        header p { margin: 5px 0 0; font-size: 0.85rem; color: var(--text-light); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+        .content { padding: 30px 20px; }
+
+        /* Titres de section stylisés */
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 40px 0 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.1); margin-left: 15px; }
+        .section-title i { margin-right: 8px; font-style: normal; font-size: 1.2rem; }
+
+        /* Grille Responsive */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        /* Carte d'observation interactive */
+        .obs-card {
+            background: rgba(255,255,255,0.6);
+            border: 2px solid transparent;
+            padding: 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .obs-card:hover { transform: translateY(-3px); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        
+        .obs-card.active {
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(45, 106, 79, 0.2);
+        }
+
+        .obs-card input { display: none; }
+
+        .check-circle {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            border: 2px solid #cbd5e1;
+            margin-right: 15px;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+
+        .obs-card.active .check-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .obs-card.active .check-circle::after { content: '✓'; font-size: 14px; font-weight: bold; }
+
+        .card-text strong { display: block; font-size: 0.95rem; color: var(--text-dark); margin-bottom: 3px; }
+        .card-text small { font-size: 0.8rem; color: var(--text-light); line-height: 1.3; }
+
+        /* Bouton d'action flottant */
+        .action-area {
+            position: sticky;
+            bottom: 20px;
+            padding: 0 20px;
+            margin-top: 30px;
+            z-index: 20;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            background: var(--text-dark);
+            color: white;
+            padding: 18px;
+            border-radius: 16px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+
+        .btn-analyze:active { transform: scale(0.96); }
+
+        /* Loader Animation */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 20px; height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Zone de résultat */
+        #result-panel {
+            display: none;
+            background: #fff;
+            margin: 20px;
+            border-radius: 20px;
+            padding: 30px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .score-circle {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0%, #eee 0%);
+            margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .score-circle::before {
+            content: ''; position: absolute; width: 65px; height: 65px; background: white; border-radius: 50%;
+        }
+        .score-value { position: relative; font-weight: 800; font-size: 1.5rem; color: var(--primary); }
+
+        .remedy-card {
+            background: #f8fafc;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .remedy-card h4 { margin: 0 0 5px 0; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        .remedy-card.critical { border-left-color: var(--danger); background: #fff5f5; }
+        .remedy-card.good { border-left-color: var(--success); background: #e6fffa; }
+
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <header>
+        <h1>BioSolis Prime</h1>
+        <p>Expertise Complète Bourguignon</p>
+    </header>
+
+    <div class="content" id="form-content">
+        
+        <!-- SECTION 1 : PHYSIQUE -->
+        <div class="section-title"><i>🏗️</i> Structure & Physique</div>
+        <div class="grid">
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="hydromorphie">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Taches Grises/Bleues</strong>
+                    <small>Sol asphyxié (Fer réduit), odeur d'œuf pourri</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="compaction">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Semelle de Labour</strong>
+                    <small>Zone très dure à 20-30cm de profondeur</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="erosion">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Érosion en nappe</strong>
+                    <small>Sable en surface, l'argile et l'humus partent</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="battance">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Croûte de Battance</strong>
+                    <small>Sol lisse et imperméable après la pluie</small>
+                </div>
+            </label>
+        </div>
+
+        <!-- SECTION 2 : CHIMIE -->
+        <div class="section-title"><i>🧪</i> Chimie & Équilibre</div>
+        <div class="grid">
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="acide">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Test Vinaigre : Ça mousse</strong>
+                    <small>Présence de calcaire actif (Ca++)</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="fer_rouille">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Taches Rouille/Orange</strong>
+                    <small>Fer oxydé : L'air circule bien par endroits</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="odeur_alcool">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Odeur Alcool/Pomme</strong>
+                    <small>Fermentation anaérobie (Mauvais compostage)</small>
+                </div>
+            </label>
+        </div>
+
+        <!-- SECTION 3 : BIOLOGIE -->
+        <div class="section-title"><i>🦠</i> Biologie du Sol</div>
+        <div class="grid">
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="vers">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Vers Anéciques (Gros)</strong>
+                    <small>Turricules en surface, galeries verticales</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="mycelium">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Mycélium Blanc</strong>
+                    <small>Champignons décomposant la matière</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="residus">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Résidus Intacts > 1 an</strong>
+                    <small>Paille/Feuilles ne se décomposent pas</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="racines_horiz">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Racines à l'horizontale</strong>
+                    <small>Les racines dévient car bloquées</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="rhizosphere">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Gaine Rhizosphérique</strong>
+                    <small>Terre collée aux racines (Symbiose OK)</small>
+                </div>
+            </label>
+        </div>
+
+        <!-- SECTION 4 : PLANTES INDICATRICES -->
+        <div class="section-title"><i>🌿</i> Bio-Indicateurs</div>
+        <div class="grid">
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="rumex">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Rumex / Oseille</strong>
+                    <small>Sol acide, tassé et hydromorphe</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="liseron">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Liseron / Chardon</strong>
+                    <small>Excès d'azote ou blocage MO</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="chiendent">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Chiendent</strong>
+                    <small>Sol fatigué, déstructuré, en friche</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="ortie">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Ortie (En masse)</strong>
+                    <small>Excès de Fer et d'Azote (Pollution ?)</small>
+                </div>
+            </label>
+            <label class="obs-card" onclick="toggleCard(this)">
+                <input type="checkbox" id="mouron">
+                <div class="check-circle"></div>
+                <div class="card-text">
+                    <strong>Mouron Blanc</strong>
+                    <small>Sol équilibré, minéralisation optimale</small>
+                </div>
+            </label>
+        </div>
+
+    </div>
+
+    <!-- Panel de résultat (caché au début) -->
+    <div id="result-panel">
+        <div class="score-circle" id="score-ring">
+            <span class="score-value" id="score-text">0%</span>
+        </div>
+        <h3 style="text-align:center; margin-top:0;">Vitalité du Sol</h3>
+        <p style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:20px;" id="verdict-global"></p>
+        
+        <div id="remedies-container"></div>
+        
+        <button onclick="resetApp()" style="width:100%; padding:15px; background:#eee; border:none; border-radius:12px; margin-top:20px; cursor:pointer;">Nouvelle Analyse</button>
+    </div>
+
+    <div class="action-area" id="action-area">
+        <button class="btn-analyze" onclick="lancerDiagnostic()">
+            <div class="loader" id="loader"></div>
+            <span id="btn-text">Générer l'Expertise IA</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- 1. GESTION VISUELLE ---
+    function toggleCard(element) {
+        const checkbox = element.querySelector('input');
+        setTimeout(() => {
+            if(checkbox.checked) {
+                element.classList.add('active');
+            } else {
+                element.classList.remove('active');
+            }
+        }, 50);
+    }
+
+    // --- 2. LOGIQUE MÉTIER ---
+    function lancerDiagnostic() {
+        const btnText = document.getElementById('btn-text');
+        const loader = document.getElementById('loader');
+        
+        btnText.innerText = "Calcul des horizons...";
+        loader.style.display = "block";
+        
+        setTimeout(() => {
+            afficherResultats();
+            btnText.innerText = "Générer l'Expertise IA";
+            loader.style.display = "none";
+        }, 1200);
+    }
+
+    function afficherResultats() {
+        // Récupération automatique de toutes les checkbox
+        const ids = [
+            'hydromorphie', 'compaction', 'erosion', 'battance',
+            'acide', 'fer_rouille', 'odeur_alcool',
+            'vers', 'mycelium', 'residus', 'racines_horiz', 'rhizosphere',
+            'rumex', 'liseron', 'chiendent', 'ortie', 'mouron'
+        ];
+        
+        const obs = {};
+        ids.forEach(id => obs[id] = document.getElementById(id).checked);
+
+        // Algorithme de Score Bourguignon
+        let score = 50; 
+        
+        // Bonus (Signes de vie)
+        if (obs.vers) score += 15;
+        if (obs.mycelium) score += 15;
+        if (obs.rhizosphere) score += 15;
+        if (obs.mouron) score += 10;
+        if (obs.fer_rouille) score += 5; // Un peu d'air circule
+
+        // Malus (Signes de mort/blocage)
+        if (obs.hydromorphie) score -= 25; // Très grave
+        if (obs.odeur_alcool) score -= 20;
+        if (obs.compaction) score -= 15;
+        if (obs.residus) score -= 15; // Panne biologique
+        if (obs.erosion) score -= 10;
+        if (obs.racines_horiz) score -= 10;
+        if (obs.acide) score -= 5; // Pas grave mais à gérer
+
+        // Bornes
+        score = Math.max(0, Math.min(100, score));
+
+        // Génération des Remèdes
+        let htmlRemedes = "";
+
+        // 1. PHYSIQUE & EAU
+        if (obs.hydromorphie || obs.odeur_alcool) {
+            htmlRemedes += `<div class="remedy-card critical"><h4>🚨 Asphyxie (Anaérobiose)</h4>
+            Le sol manque cruellement d'oxygène. Les bonnes bactéries meurent, les pathogènes arrivent.
+            <br><b>Remède :</b> Arrêt total de l'arrosage. Passage de la grelinette pour faire entrer l'air. Surtout pas de fumier frais !</div>`;
+        }
+        if (obs.compaction || obs.racines_horiz) {
+            htmlRemedes += `<div class="remedy-card"><h4>🚜 Semelle de labour</h4>
+            Les racines ne descendent plus. 
+            <br><b>Remède :</b> Semez des plantes à racines pivotantes puissantes (Luzerne, Consoude, Radis Daikon) qui perceront le sol pour vous.</div>`;
+        }
+        if (obs.erosion || obs.battance) {
+             htmlRemedes += `<div class="remedy-card"><h4>🛡️ Perte du complexe Argilo-Humique</h4>
+             Votre sol part à la rivière. 
+             <br><b>Remède :</b> Couverture permanente obligatoire (Paille, BRF, Feuilles). Le sol ne doit jamais voir le soleil nu.</div>`;
+        }
+
+        // 2. CHIMIE
+        if (obs.acide) {
+            htmlRemedes += `<div class="remedy-card"><h4>⚪ Calcaire Actif (Blocage)</h4>
+            L'effervescence indique beaucoup de Calcium. Cela peut bloquer le Fer et le Magnésium (Chlorose).
+            <br><b>Remède :</b> Évitez le chaulage. Apportez de la matière organique acide (Compost de feuilles, BRF de résineux) pour tamponner.</div>`;
+        }
+
+        // 3. BIOLOGIE
+        if (obs.residus) {
+            htmlRemedes += `<div class="remedy-card critical"><h4>💤 Panne Biologique</h4>
+            La litière ne se décompose pas. Il n'y a plus de "digesteurs" (champignons/collemboles).
+            <br><b>Remède :</b> Relancez la machine avec un "Levain" : prenez un peu de terre de forêt saine et mélangez-la à votre compost ou votre sol.</div>`;
+        }
+        if (!obs.mycelium && !obs.vers) {
+            htmlRemedes += `<div class="remedy-card"><h4>🍄 Carence en Carbone</h4>
+            Le sol a faim de Carbone (C/N trop bas).
+            <br><b>Remède :</b> Apport massif de BRF (Bois Raméal Fragmenté) à l'automne pour nourrir les champignons (Basidiomycètes).</div>`;
+        }
+        if (obs.rhizosphere) {
+             htmlRemedes += `<div class="remedy-card good"><h4>✨ Symbiose active</h4>
+             La glomaline colle la terre aux racines. C'est le signe de la santé parfaite selon Bourguignon. Continuez ainsi !</div>`;
+        }
+
+        // 4. PLANTES
+        if (obs.liseron) {
+             htmlRemedes += `<div class="remedy-card"><h4>🌿 Liseron / Chardon</h4>
+             Indique souvent un excès d'azote nitrique et un sol compacté.
+             <br><b>Remède :</b> Ne les arrachez pas (ça les multiplie). Fauchez-les régulièrement et paillez massivement pour étouffer.</div>`;
+        }
+        if (obs.chiendent) {
+             htmlRemedes += `<div class="remedy-card"><h4>🌾 Chiendent</h4>
+             Signe d'un sol fatigué et déstructuré. Le chiendent essaie de tenir la terre.
+             <br><b>Remède :</b> Couvert végétal dense (Seigle + Vesce) pour concurrencer le chiendent et restructurer le sol.</div>`;
+        }
+        if (obs.rumex) {
+             htmlRemedes += `<div class="remedy-card"><h4>🌿 Rumex</h4>
+             Indique une hydromorphie liée à un tassement. C'est une plante de "milieu anaérobie". Aérez le sol.</div>`;
+        }
+
+        // Défaut
+        if (htmlRemedes === "") {
+            htmlRemedes = `<div class="remedy-card good">Aucun défaut majeur détecté. Votre sol semble en équilibre. Continuez l'observation des vers de terre.</div>`;
+        }
+
+        // Affichage
+        document.getElementById('form-content').style.display = 'none';
+        document.getElementById('action-area').style.display = 'none';
+        document.getElementById('result-panel').style.display = 'block';
+        
+        const ring = document.getElementById('score-ring');
+        const text = document.getElementById('score-text');
+        
+        let color = score < 40 ? '#e63946' : (score < 70 ? '#e9c46a' : '#2a9d8f');
+        ring.style.background = `conic-gradient(${color} ${score}%, #eee ${score}% 100%)`;
+        text.innerText = score + "%";
+        text.style.color = color;
+
+        let verdict = "Sol en danger biologique.";
+        if(score > 40) verdict = "Sol en transition ou déséquilibre partiel.";
+        if(score > 75) verdict = "Excellent sol vivant (Aggradation).";
+        
+        document.getElementById('verdict-global').innerText = verdict;
+        document.getElementById('remedies-container').innerHTML = htmlRemedes;
+        
+        window.scrollTo(0,0);
+    }
+
+    function resetApp() {
+        document.getElementById('form-content').style.display = 'block';
+        document.getElementById('action-area').style.display = 'block';
+        document.getElementById('result-panel').style.display = 'none';
+        document.querySelectorAll('.obs-card').forEach(el => {
+            el.classList.remove('active');
+            el.querySelector('input').checked = false;
+        });
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>
