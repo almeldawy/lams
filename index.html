@@ -4,14 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- PWA : Lien vers le Manifest (Le fichier d'identité de l'app) -->
+    <!-- PWA : Lien vers le Manifest -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- Couleur de la barre d'état sur mobile -->
     <meta name="theme-color" content="#2d6a4f">
-    
-    <!-- Icône pour iOS/Safari -->
-    <link rel="apple-touch-icon" href="apple-touch-icon">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
     <title>BioSolis Prime | Diagnostic Sol</title>
     
@@ -39,11 +35,8 @@
             background: var(--bg-gradient);
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
         }
 
         .app-shell {
@@ -55,159 +48,166 @@
             box-shadow: var(--shadow);
             width: 100%;
             max-width: 700px;
-            padding: 0;
+            margin: 10px auto 40px auto;
             overflow: hidden;
-            margin-top: 20px;
-            margin-bottom: 40px;
         }
 
         header {
             background: rgba(255,255,255,0.8);
-            padding: 25px;
+            padding: 20px;
             text-align: center;
             border-bottom: 1px solid rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            backdrop-filter: blur(5px);
         }
 
-        header h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; color: var(--primary); }
-        header p { margin: 5px 0 0; font-size: 0.85rem; color: var(--text-light); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+        header p { margin: 5px 0 15px; font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; }
 
-        .content { padding: 30px 20px; }
+        /* Système d'onglets */
+        .nav-tabs {
+            display: flex;
+            background: rgba(0,0,0,0.05);
+            padding: 5px;
+            border-radius: 12px;
+            margin: 0 20px 10px;
+        }
 
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-content { display: none; padding: 20px; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Styles du Protocole */
+        .protocole-container { line-height: 1.6; }
+        .level-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .step {
+            background: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .step h3 { margin-top: 0; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .step ul { padding-left: 20px; margin: 10px 0; }
+        .result-box { background: #e6fffa; padding: 10px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--success); }
+
+        /* Styles existants du Diagnostic */
         .section-title {
             display: flex;
             align-items: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 800;
             color: var(--primary);
-            margin: 40px 0 20px 0;
+            margin: 25px 0 15px 0;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
         }
-        .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.1); margin-left: 15px; }
-        .section-title i { margin-right: 8px; font-style: normal; font-size: 1.2rem; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.1); margin-left: 10px; }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
         }
 
         .obs-card {
             background: rgba(255,255,255,0.6);
             border: 2px solid transparent;
-            padding: 16px;
+            padding: 14px;
             border-radius: 16px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
         }
-
-        .obs-card:hover { transform: translateY(-3px); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .obs-card.active {
-            background: #fff;
-            border-color: var(--primary);
-            box-shadow: 0 8px 20px rgba(45, 106, 79, 0.2);
-        }
-
+        .obs-card.active { background: #fff; border-color: var(--primary); box-shadow: 0 4px 12px rgba(45, 106, 79, 0.1); }
         .obs-card input { display: none; }
 
         .check-circle {
-            width: 24px; height: 24px;
+            width: 22px; height: 22px;
             border-radius: 50%;
             border: 2px solid #cbd5e1;
-            margin-right: 15px;
+            margin-right: 12px;
             flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
         }
+        .obs-card.active .check-circle { background: var(--primary); border-color: var(--primary); color: white; }
+        .obs-card.active .check-circle::after { content: '✓'; font-size: 12px; font-weight: bold; }
 
-        .obs-card.active .check-circle {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-        
-        .obs-card.active .check-circle::after { content: '✓'; font-size: 14px; font-weight: bold; }
+        .card-text strong { display: block; font-size: 0.9rem; margin-bottom: 2px; }
+        .card-text small { font-size: 0.75rem; color: var(--text-light); }
 
-        .card-text strong { display: block; font-size: 0.95rem; color: var(--text-dark); margin-bottom: 3px; }
-        .card-text small { font-size: 0.8rem; color: var(--text-light); line-height: 1.3; }
-
-        .action-area {
-            position: sticky;
-            bottom: 20px;
-            padding: 0 20px;
-            margin-top: 30px;
-            z-index: 20;
-        }
+        .action-area { padding: 20px; position: sticky; bottom: 0; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
 
         .btn-analyze {
             width: 100%;
             background: var(--text-dark);
             color: white;
-            padding: 18px;
-            border-radius: 16px;
+            padding: 16px;
+            border-radius: 14px;
             border: none;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             display: flex; justify-content: center; align-items: center; gap: 10px;
         }
-
-        .loader {
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top: 3px solid #fff;
-            border-radius: 50%;
-            width: 20px; height: 20px;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #result-panel {
             display: none;
             background: #fff;
-            margin: 20px;
+            margin: 15px;
             border-radius: 20px;
-            padding: 30px;
-            animation: slideUp 0.5s ease-out;
+            padding: 25px;
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
         .score-circle {
-            width: 80px; height: 80px;
+            width: 70px; height: 70px;
             border-radius: 50%;
-            background: conic-gradient(var(--primary) 0%, #eee 0%);
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
             display: flex; align-items: center; justify-content: center;
             position: relative;
         }
-        .score-circle::before {
-            content: ''; position: absolute; width: 65px; height: 65px; background: white; border-radius: 50%;
-        }
-        .score-value { position: relative; font-weight: 800; font-size: 1.5rem; color: var(--primary); }
+        .score-circle::before { content: ''; position: absolute; width: 55px; height: 55px; background: white; border-radius: 50%; }
+        .score-value { position: relative; font-weight: 800; font-size: 1.3rem; }
 
         .remedy-card {
             background: #f8fafc;
             border-left: 4px solid var(--accent);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
         }
-        .remedy-card h4 { margin: 0 0 5px 0; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        .remedy-card.critical { border-left-color: var(--danger); background: #fff5f5; }
-        .remedy-card.good { border-left-color: var(--success); background: #e6fffa; }
+        .remedy-card h4 { margin: 0 0 4px 0; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -215,118 +215,197 @@
 <div class="app-shell">
     <header>
         <h1>BioSolis Prime</h1>
-        <p>Expertise Microbiologique des Sols</p>
+        <p>Expertise des Sols</p>
+        
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('diagnostic')">Diagnostic</button>
+            <button class="tab-btn" onclick="switchTab('protocole')">Protocole</button>
+        </nav>
     </header>
 
-    <div class="content" id="form-content">
-        <!-- Section Physique -->
-        <div class="section-title"><i>🏗️</i> Structure</div>
-        <div class="grid">
-            <label class="obs-card" onclick="toggleCard(this)">
-                <input type="checkbox" id="hydromorphie">
-                <div class="check-circle"></div>
-                <div class="card-text">
-                    <strong>Taches Grises/Bleues</strong>
-                    <small>Sol asphyxié (Hydromorphie)</small>
-                </div>
-            </label>
-            <label class="obs-card" onclick="toggleCard(this)">
-                <input type="checkbox" id="compaction">
-                <div class="check-circle"></div>
-                <div class="card-text">
-                    <strong>Sol Très Dur</strong>
-                    <small>Semelle de labour ou compaction</small>
-                </div>
-            </label>
+    <!-- ONGLET 1 : DIAGNOSTIC (Le calculateur existant) -->
+    <div id="tab-diagnostic" class="tab-content active">
+        <div class="content" id="form-content">
+            <div class="section-title"><i>🏗️</i> Structure Physique</div>
+            <div class="grid">
+                <label class="obs-card" onclick="toggleCard(this)">
+                    <input type="checkbox" id="hydromorphie">
+                    <div class="check-circle"></div>
+                    <div class="card-text">
+                        <strong>Taches Grises/Bleues</strong>
+                        <small>Sol asphyxié (Hydromorphie)</small>
+                    </div>
+                </label>
+                <label class="obs-card" onclick="toggleCard(this)">
+                    <input type="checkbox" id="compaction">
+                    <div class="check-circle"></div>
+                    <div class="card-text">
+                        <strong>Sol Très Dur</strong>
+                        <small>Semelle de labour / compaction</small>
+                    </div>
+                </label>
+            </div>
+
+            <div class="section-title"><i>🦠</i> Vie Biologique</div>
+            <div class="grid">
+                <label class="obs-card" onclick="toggleCard(this)">
+                    <input type="checkbox" id="vers">
+                    <div class="check-circle"></div>
+                    <div class="card-text">
+                        <strong>Vers de terre</strong>
+                        <small>Turricules ou galeries visibles</small>
+                    </div>
+                </label>
+                <label class="obs-card" onclick="toggleCard(this)">
+                    <input type="checkbox" id="mycelium">
+                    <div class="check-circle"></div>
+                    <div class="card-text">
+                        <strong>Mycélium Blanc</strong>
+                        <small>Filaments de champignons sains</small>
+                    </div>
+                </label>
+                <label class="obs-card" onclick="toggleCard(this)">
+                    <input type="checkbox" id="rhizosphere">
+                    <div class="check-circle"></div>
+                    <div class="card-text">
+                        <strong>Terre collée aux racines</strong>
+                        <small>Gaine rhizosphérique active</small>
+                    </div>
+                </label>
+            </div>
+
+            <div class="section-title"><i>🌿</i> Bio-indicateurs</div>
+            <div class="grid">
+                <label class="obs-card" onclick="toggleCard(this)">
+                    <input type="checkbox" id="rumex">
+                    <div class="check-circle"></div>
+                    <div class="card-text">
+                        <strong>Rumex / Chardon</strong>
+                        <small>Signe de tassement / humidité</small>
+                    </div>
+                </label>
+                <label class="obs-card" onclick="toggleCard(this)">
+                    <input type="checkbox" id="mouron">
+                    <div class="check-circle"></div>
+                    <div class="card-text">
+                        <strong>Mouron Blanc</strong>
+                        <small>Indique une bonne minéralisation</small>
+                    </div>
+                </label>
+            </div>
         </div>
 
-        <!-- Section Biologie -->
-        <div class="section-title"><i>🦠</i> Biologie</div>
-        <div class="grid">
-            <label class="obs-card" onclick="toggleCard(this)">
-                <input type="checkbox" id="vers">
-                <div class="check-circle"></div>
-                <div class="card-text">
-                    <strong>Vers de terre</strong>
-                    <small>Présence de turricules ou galeries</small>
-                </div>
-            </label>
-            <label class="obs-card" onclick="toggleCard(this)">
-                <input type="checkbox" id="mycelium">
-                <div class="check-circle"></div>
-                <div class="card-text">
-                    <strong>Mycélium Blanc</strong>
-                    <small>Signe de décomposition fongique</small>
-                </div>
-            </label>
-            <label class="obs-card" onclick="toggleCard(this)">
-                <input type="checkbox" id="rhizosphere">
-                <div class="check-circle"></div>
-                <div class="card-text">
-                    <strong>Terre collée aux racines</strong>
-                    <small>Gaine rhizosphérique (Glomaline)</small>
-                </div>
-            </label>
+        <div id="result-panel">
+            <div class="score-circle" id="score-ring">
+                <span class="score-value" id="score-text">0%</span>
+            </div>
+            <h3 style="text-align:center; margin-top:0;">Vitalité du Sol</h3>
+            <p style="text-align:center; color:#666; font-size:0.85rem; margin-bottom:15px;" id="verdict-global"></p>
+            <div id="remedies-container"></div>
+            <button onclick="resetApp()" style="width:100%; padding:12px; background:#eee; border:none; border-radius:10px; margin-top:15px; cursor:pointer; font-weight:600;">Nouvelle Analyse</button>
         </div>
 
-        <!-- Section Bio-indicateurs -->
-        <div class="section-title"><i>🌿</i> Indicateurs</div>
-        <div class="grid">
-            <label class="obs-card" onclick="toggleCard(this)">
-                <input type="checkbox" id="rumex">
-                <div class="check-circle"></div>
-                <div class="card-text">
-                    <strong>Rumex / Chardon</strong>
-                    <small>Tassement et anaérobiose</small>
-                </div>
-            </label>
-            <label class="obs-card" onclick="toggleCard(this)">
-                <input type="checkbox" id="mouron">
-                <div class="check-circle"></div>
-                <div class="card-text">
-                    <strong>Mouron Blanc</strong>
-                    <small>Bonne minéralisation</small>
-                </div>
-            </label>
+        <div class="action-area" id="action-area">
+            <button class="btn-analyze" onclick="lancerDiagnostic()">
+                <span id="btn-text">Générer l'Expertise IA</span>
+            </button>
         </div>
     </div>
 
-    <!-- Panel de résultat -->
-    <div id="result-panel">
-        <div class="score-circle" id="score-ring">
-            <span class="score-value" id="score-text">0%</span>
-        </div>
-        <h3 style="text-align:center; margin-top:0;">Vitalité du Sol</h3>
-        <p style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:20px;" id="verdict-global"></p>
-        <div id="remedies-container"></div>
-        <button onclick="resetApp()" style="width:100%; padding:15px; background:#eee; border:none; border-radius:12px; margin-top:20px; cursor:pointer;">Nouvelle Analyse</button>
-    </div>
+    <!-- ONGLET 2 : PROTOCOLE (Les nouvelles informations) -->
+    <div id="tab-protocole" class="tab-content">
+        <div class="protocole-container">
+            
+            <div class="level-badge">NIVEAU 1 — Terrain (0 €, 1–2 h)</div>
+            
+            <div class="step">
+                <h3>1️⃣ Observation générale</h3>
+                <ul>
+                    <li>Localisation (urbain / rural)</li>
+                    <li>Historique (ancien potager, friche ?)</li>
+                    <li>Ensoleillement & Zones humides</li>
+                </ul>
+            </div>
 
-    <div class="action-area" id="action-area">
-        <button class="btn-analyze" onclick="lancerDiagnostic()">
-            <div class="loader" id="loader"></div>
-            <span id="btn-text">Générer l'Expertise IA</span>
-        </button>
+            <div class="step">
+                <h3>2️⃣ Test bêche (Fondamental)</h3>
+                <p><small>Creuse un trou 30 × 30 × 30 cm</small></p>
+                <ul>
+                    <li><b>Couleur :</b> Brun (bon) vs Gris (asphyxie)</li>
+                    <li><b>Odeur :</b> Forêt (vivant) vs Œuf (manque d'air)</li>
+                    <li><b>Racines :</b> Observez si elles sont déformées</li>
+                </ul>
+                <div class="result-box">📌 Attendu : sol grumeleux, vers visibles.</div>
+            </div>
+
+            <div class="step">
+                <h3>3️⃣ Test du bocal (Texture)</h3>
+                <p><small>1/3 terre + 2/3 eau. Agite 2 min, repos 24h.</small></p>
+                <ul>
+                    <li>Bas : Sable | Milieu : Limon | Haut : Argile</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>4️⃣ Test infiltration</h3>
+                <p><small>Verse 1L d'eau dans un trou de 10cm.</small></p>
+                <ul>
+                    <li>&lt; 5 min : Drainant</li>
+                    <li>5-15 min : Bon</li>
+                    <li>&gt; 20 min : Compact</li>
+                </ul>
+            </div>
+
+            <div class="level-badge" style="background:var(--accent)">NIVEAU 2 — Analyses (20–40 €)</div>
+            
+            <div class="step">
+                <h3>5️⃣ Mesure du pH</h3>
+                <ul>
+                    <li>Objectif potager : <b>pH 6,2 à 7,0</b></li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>6️⃣ Test NPK simplifié</h3>
+                <ul>
+                    <li>Azote (N), Phosphore (P), Potassium (K)</li>
+                    <li>Matière organique (%)</li>
+                </ul>
+            </div>
+
+            <div class="level-badge" style="background:var(--text-dark)">NIVEAU 3 — Actions</div>
+
+            <div class="step" style="border-left: 4px solid var(--danger)">
+                <h3>🧠 Interpréter & Agir</h3>
+                <p><b>pH trop bas (&lt; 6) :</b> Ajouter compost mûr ou dolomie.</p>
+                <p><b>Sol compact :</b> Ajouter compost/BRF, ne jamais retourner profond.</p>
+                <p><b>Sol pauvre :</b> Plan sur 1 an (2-3 kg/m² compost, engrais verts).</p>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
-    // --- 1. ENREGISTREMENT DU SERVICE WORKER (PWA) ---
-    // On vérifie si le navigateur supporte les Service Workers
+    // --- 1. GESTION DES ONGLETS ---
+    function switchTab(tabId) {
+        // Désactiver tous les onglets
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        // Activer l'onglet choisi
+        document.getElementById('tab-' + tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // --- 2. ENREGISTREMENT PWA ---
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        // On enregistre le fichier sw.js situé dans le même dossier
-        navigator.serviceWorker.register('./sw.js')
-          .then(registration => {
-            console.log('Service Worker enregistré avec succès !', registration.scope);
-          })
-          .catch(err => {
-            console.log('Échec de l\'enregistrement du Service Worker :', err);
-          });
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
       });
     }
 
-    // --- 2. LOGIQUE DE L'APPLICATION ---
+    // --- 3. LOGIQUE DU DIAGNOSTIC ---
     function toggleCard(element) {
         const checkbox = element.querySelector('input');
         setTimeout(() => {
@@ -340,14 +419,11 @@
 
     function lancerDiagnostic() {
         const btnText = document.getElementById('btn-text');
-        const loader = document.getElementById('loader');
-        btnText.innerText = "Analyse des horizons...";
-        loader.style.display = "block";
+        btnText.innerText = "Analyse en cours...";
         setTimeout(() => {
             afficherResultats();
             btnText.innerText = "Générer l'Expertise IA";
-            loader.style.display = "none";
-        }, 1500);
+        }, 1000);
     }
 
     function afficherResultats() {
@@ -373,12 +449,9 @@
         score = Math.max(0, Math.min(100, score));
 
         let htmlRemedes = "";
-        if (obs.hydromorphie) htmlRemedes += `<div class="remedy-card critical"><h4>🚨 Hydromorphie</h4>Le sol est asphyxié. <b>Remède :</b> Aérer à la grelinette, éviter le tassement.</div>`;
-        if (obs.compaction) htmlRemedes += `<div class="remedy-card"><h4>🚜 Compaction</h4><b>Remède :</b> Semis de plantes pivotantes (Luzerne, Consoude).</div>`;
-        if (obs.rhizosphere) htmlRemedes += `<div class="remedy-card good"><h4>✨ Symbiose OK</h4>La terre colle aux racines. La vie microbiologique est active !</div>`;
-        if (obs.rumex) htmlRemedes += `<div class="remedy-card"><h4>🌿 Rumex</h4>Indique un sol tassé et humide. Travaillez la structure sans retourner.</div>`;
-
-        if (htmlRemedes === "") htmlRemedes = `<div class="remedy-card good">Équilibre global correct. Continuez le paillage.</div>`;
+        if (obs.hydromorphie) htmlRemedes += `<div class="remedy-card" style="border-left-color:var(--danger)"><h4>🚨 Asphyxie</h4>Aérer à la grelinette, éviter le tassement humide.</div>`;
+        if (obs.compaction) htmlRemedes += `<div class="remedy-card"><h4>🚜 Tassement</h4>Semis de plantes à racines pivotantes (Luzerne).</div>`;
+        if (obs.rhizosphere) htmlRemedes += `<div class="remedy-card" style="border-left-color:var(--success)"><h4>✨ Vie Active</h4>Gaine rhizosphérique présente. Excellent !</div>`;
 
         document.getElementById('form-content').style.display = 'none';
         document.getElementById('action-area').style.display = 'none';
@@ -391,9 +464,8 @@
         text.innerText = score + "%";
         text.style.color = color;
 
-        document.getElementById('verdict-global').innerText = score > 75 ? "Excellent sol vivant." : "Sol en déséquilibre biologique.";
+        document.getElementById('verdict-global').innerText = score > 75 ? "Sol très vivant." : "Sol nécessitant des soins.";
         document.getElementById('remedies-container').innerHTML = htmlRemedes;
-        window.scrollTo(0,0);
     }
 
     function resetApp() {
@@ -404,7 +476,6 @@
             el.classList.remove('active');
             el.querySelector('input').checked = false;
         });
-        window.scrollTo(0,0);
     }
 </script>
 
